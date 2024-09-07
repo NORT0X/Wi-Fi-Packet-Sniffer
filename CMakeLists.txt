@@ -1,16 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 project(WifiPacketSniffer)
 
-# Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Include directories for PCAP library
 include_directories(${PROJECT_SOURCE_DIR}/inc)
-include_directories("C:/npcap/Include")
 
-# Find the PCAP library
-link_directories("C:/npcap/Lib/x64")
+find_path(PCAP_INCLUDE_DIR pcap.h)
+find_package(Pcap REQUIRED)
+
+if(PCAP_INCLUDE_DIR AND PCAP_LIBRARY)
+    message(STATUS "Found PCAP library: ${PCAP_LIBRARY}")
+    include_directories(${PCAP_INCLUDE_DIR})
+else()
+    message(FATAL_ERROR "Could not find the PCAP library")
+endif()
 
 # Source files
 set(SOURCE_FILES
@@ -23,5 +28,5 @@ set(SOURCE_FILES
 add_executable(WifiPacketSniffer ${SOURCE_FILES})
 
 # Link the libraries
-target_link_libraries(WifiPacketSniffer wpcap Packet)
+target_link_libraries(WifiPacketSniffer pcap)
 
